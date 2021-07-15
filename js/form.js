@@ -80,3 +80,26 @@ const getInputValueById = (id) => {
     return value;
 }
 
+const resetForm = () =>{
+    setValue('#name','');
+    unsetSelectedValues('[name=profile]');
+    unsetSelectedValues('[name=gender]');
+    unsetSelectedValues('[name=department]');
+    setValue('#salary','');
+    setValue('#day','1');
+    setValue('#month','Jan');
+    setValue('#year','2021');
+    setValue('#notes','');
+}
+
+const unsetSelectedValues = (propertyValue) =>{
+    let allItems = document.querySelector(propertyValue);
+    allItems.forEach(item =>{
+        item.checked = false;
+    });
+}
+
+const setValue = (id,value) =>{
+    const element = document.querySelector(id);
+    element.value = value;
+}
