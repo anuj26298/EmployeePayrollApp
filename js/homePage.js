@@ -4,24 +4,55 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 const createInnerHtml = () => {
     const headerHtml = "<th></th><th>Name</th><th>Gender</th><th>Department</th><th>Salary</th><th>Start Date</th><th>Actions</th>";
-    const innerHtml = `${headerHtml}
-    <tr>
-    <td>
-        <img src="/assets/profile-images/Ellipse -2.png" alt="profile-images" class="profile">
-    </td>
-    <td>Narayan Mahadevan</td>
-    <td>Male</td>
-    <td>
-        <div class="dept-label">HR</div>
-        <div class="dept-label">Finance</div>
-    </td>
-    <td>300000</td>
-    <td>1 Nov 2020</td>
-    <td>
-        <img src="/assets/icons/delete-black-18dp.svg" alt="delete" id="1" onclick="remove(this)">
-        <img src="/assets/icons/create-black-18dp.svg" alt="edit" id="1" onclick="update(this)">
-    </td>
-    </tr>
-    `;
+    let innerHtml = `${headerHtml}`;
+    let employeePayrollList = createEmployeePayrollJSON();
+    for(const empPayrollData of employeePayrollList){
+        innerHtml = `${innerHtml}
+        <tr>
+        <td><img src="${empPayrollData._profilePic}" class="profile"></td>
+          <td>${empPayrollData._name}</td>
+          <td>${empPayrollData._gender}</td>
+          <td>${getDeptHtml(empPayrollData._department)}</td>
+          <td>${empPayrollData._salary}</td>
+          <td>${empPayrollData._startDate}</td>
+          <td>
+           <img src="/assets/icons/delete-black-18dp.svg" id="1" onclick="remove(this)">
+           <img src="/assets/icons/create-black-18dp.svg" id="1" onclick="update(this">
+          </td>
+        </tr>
+        `;
+    }
     document.querySelector('#display').innerHTML = innerHtml;
+}
+
+const createEmployeePayrollJSON = () =>{
+    let empPayrollListLocal = [
+        {
+            _name: 'Anuj Kumar',
+            _gender: 'Male',
+            _department: ['Engineer'],
+            _salary: '5000000',
+            _startDate: '26 May 2021',
+            _note: '',
+            _profilePic: '/assets/profile-images/Ellipse -3.png'
+        },
+        {
+            _name: 'Shivi',
+            _gender: 'Female',
+            _department: ['Engineer','HR'],
+            _salary: '50000550',
+            _startDate: '26 May 2021',
+            _note: '',
+            _profilePic: '/assets/profile-images/Ellipse -1.png'
+        }
+    ];
+    return empPayrollListLocal;
+}
+
+const getDeptHtml = (deptList) =>{
+    let deptHtml = '';
+    for(const dept of deptList){
+        deptHtml = `${deptHtml}<div class="dept-label">${dept}</div>`;
+    }
+    return deptHtml
 }
