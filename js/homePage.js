@@ -1,14 +1,35 @@
 let empPayrollList;
 window.addEventListener('DOMContentLoaded', (event) => {
-    empPayrollList = getEmployeePayrollDataFromStorage();
-    document.querySelector(".emp-count").textContent = empPayrollList.length;
-    createInnerHtml();
-    localStorage.removeItem('editEmp');
+    if(site_properties.use_local_storage.match("true")){
+        getEmployeePayrollDataFromStorage();
+    }else
+    {
+        getEmployeePayrollDataFromServer();
+    }
+
 });
 
+const processEmployeePayrollDataResponse = () => {
+    document.querySelector('.emp-count').textContent = empPayrollList.length;
+    createInnerHtml();
+    localStorage.removeItem('editEmp');
+}
+const getEmployeePayrollDataFromServer = () => {
+    makeServiceCall("GET",site_properties.server_url,true)
+    .then(responseText => {
+        empPayrollList = JSON.parse(responseText);
+        processEmployeePayrollDataResponse();
+    })
+    .catch(error => {
+        console.log("GET Error Status "+JSON.stringify(error));
+        empPayrollList = [];
+        processEmployeePayrollDataResponse();
+    });
+}
 const getEmployeePayrollDataFromStorage = () => {
-    return localStorage.getItem('EmployeePayrollList') ?
+    empPayrollList =  localStorage.getItem('EmployeePayrollList') ?
         JSON.parse(localStorage.getItem('EmployeePayrollList')) : [];
+    processEmployeePayrollDataResponse();
 }
 const createInnerHtml = () => {
     if (empPayrollList.length == 0) return;
@@ -40,9 +61,20 @@ const remove = (node) => {
         .indexof(empPayrollList.id);
 
     empPayrollList.splice(index,1);
-    localStorage.setItem("EmployeePayrollList",JSON.stringify(empPayrollList));
-    document.querySelector(".emp-count").textContent = empPayrollList.length();
-    createInnerHtml();
+    if(site_properties.use_local_storage.match("true")){
+        localStorage.setItem("EmployeePayrollList",JSON.stringify(empPayrollList));
+        createInnerHtml();
+    }else{
+        const deleteURL = site_properties.server_url+"/"+empPayrollData.id.toString();
+        makeServiceCall("DELETE",deleteURL,false)
+         .then(responseText => {
+             createInnerHtml();
+         })
+         .catch(error => {
+             console.log("DELETE Error Status :"+JSON.stringify(error));
+         });
+    }
+
 }
 const getDeptHtml = (deptList) => {
     let deptHtml = '';
